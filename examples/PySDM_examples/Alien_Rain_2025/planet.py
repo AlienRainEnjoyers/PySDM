@@ -1,23 +1,24 @@
-
+import pint
 import numpy as np
-from typing import Union
 
-# Physical constants
-R_EARTH = 6.371e6  # [m] Earth radius
-M_EARTH = 5.972e24  # [kg] Earth mass
-G = 6.67430e-11  # [m³/kg/s²] Gravitational constant
-R_GAS = 8.314  # [J/mol/K] Universal gas constant
+from PySDM.physics.constants import si
+
+# Physical constants:
+R_EARTH = 6.371e6 * si.meter # [m] Earth radius
+M_EARTH = 5.972e24 * si.kg # [kg] Earth mass
+G = 6.67430e-11  * si.meter^3/si.kg/si.second^2 # [m³/kg/s²] Gravitational constant
+R_GAS = 8.314  *si.J /si.mol /si.K # [J/mol/K] Universal gas constant
 
 class Planet:
     def __init__(self, 
-                 R_p: float,  # Planet radius in Earth radii
-                 T_surf: float,  # Surface temperature [K]
-                 p_surf: float,  # Surface pressure [Pa]
+                 R_p: pint.Quantity,  # Planet radius in Earth radii
+                 T_surf: pint.Quantity,  # Surface temperature [K]
+                 p_surf: pint.Quantity,  # Surface pressure [Pa]
                  composition: np.ndarray,  # Atmospheric composition
                  condensible_species: str,  # Name of condensible species
-                 RH: float,  # Relative humidity
-                 M_p: float):  # Planet mass in Earth masses
-        
+                 RH: pint.Quantity,  # Relative humidity
+                 M_p: pint.Quantity):  # Planet mass in Earth masses
+
         self.R_p = R_p * R_EARTH  # Convert to meters
         self.T_surf = T_surf
         self.p_surf = p_surf
@@ -35,24 +36,24 @@ class Planet:
     def _calc_scale_height(self) -> float:
         """Calculate atmospheric scale height."""
         # Assume mean molecular weight of ~29 g/mol for Earth-like atmosphere
-        M_atm = 0.029  # [kg/mol]
+        M_atm = 0.029 * si.kg/si.mol 
         return R_GAS * self.T_surf / (M_atm * self.g_surf)
     
-    def gravity(self, z: float) -> float:
+    def gravity(self, z: pint.Quantity) -> pint.Quantity:
         """Calculate gravity at altitude z [m]."""
         r = self.R_p + z
         return G * self.M_p / (r ** 2)
     
-    def pressure(self, z: float) -> float:
+    def pressure(self, z: pint.Quantity) -> pint.Quantity:
         """Calculate pressure at altitude z [m]."""
         return self.p_surf * np.exp(-z / self.scale_height)
     
-    def temperature(self, z: float) -> float:
+    def temperature(self, z: pint.Quantity) -> pint.Quantity:
         """Calculate temperature at altitude z [m]."""
         # Simple isothermal atmosphere
         return self.T_surf
     
-    def saturation_vapor_pressure(self, T: float) -> float:
+    def saturation_vapor_pressure(self, T: pint.Quantity) -> pint.Quantity:
         """Calculate saturation vapor pressure [Pa] using Clausius-Clapeyron."""
         # For water vapor
         if self.condensible_species == 'h2o':
@@ -62,7 +63,7 @@ class Planet:
             # Generic approximation
             return 1000 * np.exp(20 - 5000/T)
     
-    def vapor_pressure(self, z: float) -> float:
+    def vapor_pressure(self, z: pint.Quantity) -> pint.Quantity:
         """Calculate actual vapor pressure at altitude z [m]."""
         T = self.temperature(z)
         p_sat = self.saturation_vapor_pressure(T)
