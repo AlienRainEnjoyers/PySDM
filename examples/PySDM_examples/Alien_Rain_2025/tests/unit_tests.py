@@ -3,9 +3,9 @@ import unittest
 from unittest.mock import patch
 import numpy as np
 
-from examples.PySDM_examples.Alien_Rain import alien_rain
-from examples.PySDM_examples.Alien_Rain.tests import mock_planet
-from examples.PySDM_examples.Alien_Rain.alien_rain import Planet
+from Alien_Rain_2025 import alien_rain
+from Alien_Rain_2025.tests import mock_planet
+from Alien_Rain_2025.alien_rain import Planet
 
 
 @patch(
