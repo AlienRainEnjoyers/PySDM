@@ -4,6 +4,7 @@ from PySDM.physics import constants_defaults, si
 
 import numpy as np
 from pystrict import strict
+from types import SimpleNamespace
 
 from PySDM import Formulae
 from PySDM.dynamics import condensation

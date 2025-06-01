@@ -77,7 +77,6 @@ class Simulation:
         output["S"].append(self.particulator.products["RH"].get()[cell_id] / 100 - 1)
         output["t"].append(self.particulator.products["t"].get())
 
-
     def run(self):
         output = {
             "r": [],
