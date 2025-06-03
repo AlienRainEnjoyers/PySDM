@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from PySDM.environments.parcel import Parcel
 
 
@@ -13,7 +13,7 @@ class AlienParcel(Parcel):
         w: [float, callable],
         z0: float = 0,
         mixed_phase=False,
-        variables: Optional[list[str]] = None,
+        variables: Optional[List[str]] = None,
     ):
         super().__init__(
             dt=dt,

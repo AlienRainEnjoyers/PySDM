@@ -2,6 +2,9 @@ import numpy as np
 from PySDM.physics.constants import PI_4_3
 
 class OblateSpheroid:
+    def __init__(self, *args, **kwargs):
+        pass
+
     @staticmethod
     def equivalent_radius(a: float, b: float, sigma_c_air: float, g: float, rho_c_l: float, rho_air: float) -> float: # Removed self, added a, b
         """
