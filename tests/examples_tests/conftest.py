@@ -57,6 +57,7 @@ TEST_SUITES = {
         "Grabowski_and_Pawlowska_2023",
         "Jensen_and_Nugent_2017",
         "Abade_and_Albuquerque_2024",
+        "Rogers_1975",
     ],
     "coagulation": ["Berry_1967", "Shima_et_al_2009"],
     "breakup": ["Bieli_et_al_2022", "deJong_Mackay_et_al_2023", "Srivastava_1982"],
@@ -75,7 +76,6 @@ TEST_SUITES = {
     ],
     "multi-process_e": [
         "deJong_Azimi",
-        "Szumowski_et_al_1998",
         "Bulenok_2023_MasterThesis",
         "Morrison_and_Grabowski_2007",
         "Shipway_and_Hill_2012",
