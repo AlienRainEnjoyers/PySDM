@@ -84,7 +84,7 @@ class Simulation:
         }
 
         self.save(output)
-        while self.particulator.environment["z"][0] >0 and self.particulator.attributes["volume"][0] > 1e-30:
+        while self.particulator.environment["z"][0] >0 and output["r"][-1] > 1e-8:
             print(self.particulator.environment["z"][0])
             self.particulator.run(1)
             self.save(output)

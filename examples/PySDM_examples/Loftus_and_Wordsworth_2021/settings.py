@@ -48,8 +48,8 @@ class Settings:
                 )
         def f(x):
             # return x -273
-            return self.initial_water_vapour_mixing_ratio*self.p0*(x/self.T0)**(1/(Rair/c_p)) - self.formulae.saturation_vapour_pressure.pvs_water(x)
-        
+            return self.initial_water_vapour_mixing_ratio/(self.initial_water_vapour_mixing_ratio+ const.eps)*self.p0*(x/self.T0)**(c_p/Rair
+            ) - self.formulae.saturation_vapour_pressure.pvs_water(x)
         tdews = (fsolve(f, [150,300]))
         self.Tcloud = np.max(tdews)
         self.Zcloud = (self.T0-self.Tcloud)*c_p/self.formulae.constants.g_std
@@ -57,6 +57,13 @@ class Settings:
 
         self.pcloud = self.formulae.hydrostatics.p_of_z_assuming_const_th_and_initial_water_vapour_mixing_ratio(
             self.p0, thstd, self.initial_water_vapour_mixing_ratio, self.Zcloud)
+
+        np.testing.assert_approx_equal(
+            actual=self.pcloud*(self.initial_water_vapour_mixing_ratio/(self.initial_water_vapour_mixing_ratio + const.eps))/
+              self.formulae.saturation_vapour_pressure.pvs_water(self.Tcloud),
+            desired=1,
+            significant=4
+        )
 
         # self.w_avg = w_avg
         self.r_wet = r_wet
