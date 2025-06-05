@@ -23,7 +23,18 @@ class LofusEtAl2021:
         return -np.sqrt(
             (8/3) *
             (rho_c_l - rho_air) / rho_air *
-            g / C_D *
+            const.g_std / C_D *
             b_a_ratio**TWO_THIRDS *
             r_eq
+        )
+    
+    def v_term(const, radius):
+        return np.where(
+            radius < const.ROGERS_YAU_TERM_VEL_SMALL_R_LIMIT,
+            const.ROGERS_YAU_TERM_VEL_SMALL_K * radius**const.TWO,
+            np.where(
+                radius < const.ROGERS_YAU_TERM_VEL_MEDIUM_R_LIMIT,
+                const.ROGERS_YAU_TERM_VEL_MEDIUM_K * radius,
+                const.ROGERS_YAU_TERM_VEL_LARGE_K * radius**const.ONE_HALF,
+            ),
         )

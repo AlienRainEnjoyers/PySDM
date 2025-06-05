@@ -7,24 +7,24 @@ class AlienParcel(Parcel):
         self,
         dt,
         mass_of_dry_air: float,
-        p0: float,
+        pcloud: float,
         initial_water_vapour_mixing_ratio: float,
-        T0: float,
-        w: [float, callable],
-        z0: float = 0,
+        Tcloud: float,
+        w: float = 0,
+        zcloud: float = 0,
         mixed_phase=False,
-        variables: Optional[List[str]] = None,
+
     ):
         super().__init__(
             dt=dt,
             mass_of_dry_air=mass_of_dry_air,
-            p0=p0,
+            p0=pcloud,
             initial_water_vapour_mixing_ratio=initial_water_vapour_mixing_ratio,
-            T0=T0,
+            T0=Tcloud,
             w=w,
-            z0=z0,
+            z0=zcloud,
             mixed_phase=mixed_phase,
-            variables=variables
+            variables=None
         )
 
     def advance_parcel_vars(self):
@@ -37,7 +37,7 @@ class AlienParcel(Parcel):
         T = self["T"][0]
         p = self["p"][0]
 
-        dz_dt = self.w((self.particulator.n_steps + 1 / 2) * dt) + self["terminal_velocity"][0]
+        dz_dt = - self.particulator.attributes["terminal velocity"].to_ndarray()[0]#*dt#formulae.trivia.terminal_velocity(self.particulator.#self.w((self.particulator.n_steps + 1 / 2) * dt) + self["terminal_velocity"][0]
         water_vapour_mixing_ratio = (
             self["water_vapour_mixing_ratio"][0]
             - self.delta_liquid_water_mixing_ratio / 2
@@ -53,7 +53,7 @@ class AlienParcel(Parcel):
                 self.delta_liquid_water_mixing_ratio / dz_dt / dt
             ),
         )
-        drhod_dz = drho_dz  # TODO #407
+        drhod_dz = drho_dz 
 
         self.particulator.backend.explicit_euler(self._tmp["z"], dt, dz_dt)
         self.particulator.backend.explicit_euler(

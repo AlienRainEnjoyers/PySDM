@@ -7,19 +7,14 @@ from PySDM.dynamics import AmbientThermodynamics, Condensation
 from PySDM.environments import Parcel
 from PySDM.initialisation import equilibrate_wet_radii
 from PySDM.physics import constants as const
+from PySDM_examples.Loftus_and_Wordsworth_2021.parcel import AlienParcel
 
 
 ## General simulation from Arabas and Shima 2017, also looking at Graf et al. 2019
 #Need to edit Parcel in here to change dz into w +terminalv (should this be a w function? an option?)
 # Some of this is probably not needed, not sure what yet
-
 class Simulation:
     def __init__(self, settings, backend=CPU):
-
-        dt_output = settings.dt
-        self.n_substeps = 1
-        while dt_output / self.n_substeps >= settings.dt_max:
-            self.n_substeps += 1
 
         builder = Builder(
             backend=backend(
@@ -31,13 +26,13 @@ class Simulation:
                 ),
             ),
             n_sd=1,
-            environment=Parcel(
-                dt=dt_output / self.n_substeps,
+            environment=AlienParcel(
+                dt=settings.dt, #dt_output / self.n_substeps,
                 mass_of_dry_air=settings.mass_of_dry_air,
-                p0=settings.p0,
+                pcloud=settings.pcloud,
+                zcloud= settings.Zcloud,
                 initial_water_vapour_mixing_ratio=settings.initial_water_vapour_mixing_ratio,
-                T0=settings.T0,
-                w=settings.w,
+                Tcloud=settings.Tcloud,
             ),
         )
 
@@ -49,14 +44,17 @@ class Simulation:
                 dt_cond_range=settings.dt_cond_range,
             )
         )
+        builder.request_attribute("terminal velocity")
+
         attributes = {}
-        r_dry = np.array([settings.r_dry])
+        r_dry = 1e-10 #np.array([settings.r_dry])
         attributes["dry volume"] = settings.formulae.trivia.volume(radius=r_dry)
         attributes["kappa times dry volume"] = attributes["dry volume"] * settings.kappa
-        attributes["multiplicity"] = np.array([1])
+        attributes["multiplicity"] = np.array([1], dtype=np.int64)
+        # attributes["terminal velocity"] = np.array([0.0])
         environment = builder.particulator.environment
-        attributes["volume"] = settings.formulae.trivia.volume(radius=settings.initial_radius)
-        
+        r_wet = settings.r_wet
+        attributes["volume"] = settings.formulae.trivia.volume(radius=r_wet)
         products = [
             PySDM_products.MeanRadius(name="radius_m1", unit="um"),
             PySDM_products.ParcelDisplacement(name="z"),
@@ -66,13 +64,13 @@ class Simulation:
 
         self.particulator = builder.build(attributes, products)
 
-        self.n_output = settings.n_output
 
     def save(self, output):
         cell_id = 0
         output["r"].append(
             self.particulator.products["radius_m1"].get(unit=const.si.m)[cell_id]
         )
+
         output["z"].append(self.particulator.products["z"].get()[cell_id])
         output["S"].append(self.particulator.products["RH"].get()[cell_id] / 100 - 1)
         output["t"].append(self.particulator.products["t"].get())
@@ -86,8 +84,9 @@ class Simulation:
         }
 
         self.save(output)
-        for _ in range(self.n_output):
-            self.particulator.run(self.n_substeps)
+        while self.particulator.environment["z"][0] >0 and self.particulator.attributes["volume"][0] > 1e-30:
+            print(self.particulator.environment["z"][0])
+            self.particulator.run(1)
             self.save(output)
 
         return output
