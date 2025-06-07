@@ -764,7 +764,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749 }
 wheels = [
@@ -3426,6 +3426,48 @@ wheels = [
 ]
 
 [[package]]
+name = "pypartmc"
+version = "1.7.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy", version = "1.24.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7a/39/20a33ff1df3dd1ba487f4f130dd26795fc196f46308731dc0a3798a1381f/pypartmc-1.7.2-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:103695020c8af3885f369c43e5719672a4b9d52f028a4b5655b955e0d4b79ff0", size = 4623130 },
+    { url = "https://files.pythonhosted.org/packages/72/0c/a752751cb8c7a8f721fec1e9a9e371d013ec663f709ee492dbb681503c19/pypartmc-1.7.2-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:af93195b514b8b16737a18a2ed4dbc1f317a554b4bcc277d9b80db43e77d7a5a", size = 3528412 },
+    { url = "https://files.pythonhosted.org/packages/21/dc/fef92f78fcf54cf7231e8f4b99adfe5fabff50015e74a57021c8ed9555ec/pypartmc-1.7.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6efea6b2814e0917c292cf409bf219756eeaec433f0ce8885141f9ca2cb15683", size = 3608226 },
+    { url = "https://files.pythonhosted.org/packages/93/02/1f38d79156e801bfbaf60fc2119dfd4c05bc29a53cb4607f058c6e2995d9/pypartmc-1.7.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5301d6b8ea4e3696cb6c7d31926ed065fad9667d07e0c8c1317aaee8ac452aee", size = 4358536 },
+    { url = "https://files.pythonhosted.org/packages/48/d1/bf27b959aa5f1991274e56d3698efa33b3019ddd9cab65c66053f7d7f238/pypartmc-1.7.2-cp310-cp310-win_amd64.whl", hash = "sha256:c0386f4be1546310f1896ed338e1cd0924a8940347088e1e0d07095a740e4c89", size = 3604643 },
+    { url = "https://files.pythonhosted.org/packages/cc/24/55b3c4f6f48aee34fa03f3dfab51f5fe3e1895e89533a605db2b9d9ee0ec/pypartmc-1.7.2-cp311-cp311-macosx_13_0_x86_64.whl", hash = "sha256:0fc23c28965992667b32e726f2d396a6a340ef06de33520c95582035485ac107", size = 4622934 },
+    { url = "https://files.pythonhosted.org/packages/a0/b7/cd2bf7681a2e4163ef7ac6dfa7b025d39c41fbebc0858c0af1321a6a8c80/pypartmc-1.7.2-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:e3367f02bc8721eaace57ec1c2bbab86539148bc1ba5d0ed7285df33edd8dcd7", size = 3528155 },
+    { url = "https://files.pythonhosted.org/packages/a5/d2/a7e03ac7d8539784759acfaa17d0beabcec7874d22829f07b8bc23a98a53/pypartmc-1.7.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4b3830a367b5b5c64e02e8a5cd6e87f7afdf115ab47eea0bb9821240355aa13a", size = 3608216 },
+    { url = "https://files.pythonhosted.org/packages/c7/4c/11cda8854a03f999ee7680644c0ff6a450b35a7a058764c85955530d04e0/pypartmc-1.7.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0c8a168f10f4317d3cfd501b579e46bf0ad99a1887795e9952926b546e3c565a", size = 4358541 },
+    { url = "https://files.pythonhosted.org/packages/95/6e/ef38b261aad6946785cd83b22a7f0af50dc31c2f0f250874e0817bbd4b1d/pypartmc-1.7.2-cp311-cp311-win_amd64.whl", hash = "sha256:1fad683aa7ddaab213945b5e96a086a5c29e779c5e432eaefdb49c99f7a6922a", size = 3604652 },
+    { url = "https://files.pythonhosted.org/packages/96/70/29504de9d5c0ff4a47f76f91c630bfad97600a894f9b89a5feb7d27ac2ee/pypartmc-1.7.2-cp312-cp312-macosx_13_0_x86_64.whl", hash = "sha256:2f4b5da6dc78a36ba186df238f3f19140f841a7453d7b2e1ad22e5e997c92a57", size = 4624969 },
+    { url = "https://files.pythonhosted.org/packages/cf/7d/92aa8df2fa717ef2f8b053c6389781a79ba0ce9b38351e9946f4bf56d2d8/pypartmc-1.7.2-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:68557afd1e051c5411f7747648a8cd32bf073f2d2acfc87e52a40836aa9fd0f4", size = 3531051 },
+    { url = "https://files.pythonhosted.org/packages/ea/cd/4ee48b211c61d021d149bec17062e5e8e7c5b3acffdedbdd6cee2dc603b3/pypartmc-1.7.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:459fd3b48002ef3e5d6d124fda91d0ca89070065737fc3618c19245d69be599f", size = 3608928 },
+    { url = "https://files.pythonhosted.org/packages/4e/f7/838086216bb3abb8264e31c7699095972483592eb6f57a8ab0b6a4423cc6/pypartmc-1.7.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c7ef4d3cf4a3363d05fa2b66309354aaf26ff6c8c68cbb4257e8d247ba754aa1", size = 4359765 },
+    { url = "https://files.pythonhosted.org/packages/ab/20/7d3c195dc6957837de419b777da5a114e54afeca7aa7a80f2307c448cd86/pypartmc-1.7.2-cp312-cp312-win_amd64.whl", hash = "sha256:33f3a3586999ca5b15e4d4d8f5c88b0fc70fb516686bfae3c3e17e779430e30c", size = 3604349 },
+    { url = "https://files.pythonhosted.org/packages/84/bc/4fa64ae3d975a6de09fb6d212b6f69a0bb66584538d757e0ecaa82091337/pypartmc-1.7.2-cp313-cp313-macosx_13_0_x86_64.whl", hash = "sha256:63287f902717680ed08c5c1d1af9e8fdd6a41122b61195e92383b061cdcb2891", size = 4625910 },
+    { url = "https://files.pythonhosted.org/packages/11/8b/0a76ec461f3d7d31608d980e9d412e32007552b6f004424d60b76e40763f/pypartmc-1.7.2-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:2cde00a9c34c6c6445d7529ca9775fc0a66905b3314a01a3f40a2404aceaea64", size = 3530735 },
+    { url = "https://files.pythonhosted.org/packages/51/1a/ff6ec6300e4a542d25f9afa7c82866ee65fbce1c1d0262244f6dc5a244ae/pypartmc-1.7.2-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:84e73e3b9bcacad724edc5acd85e8dbb7254399fa4c9f9c869bcfc3bf5ad30fa", size = 3609049 },
+    { url = "https://files.pythonhosted.org/packages/87/17/b11c9e7541aac388876ceb74cbb305e2a14e4db7676d17e6a9aa21ffcf9d/pypartmc-1.7.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a24bad19cf96c9a8edb9405a5680256c7ac7ccae569a3eb3cc8477b7b0ef22e0", size = 4360081 },
+    { url = "https://files.pythonhosted.org/packages/98/50/d4b8e96f6a9ec3d9e059dc4e98a2a6b548fb4f461b4d0b8d2b2c4f1e49d2/pypartmc-1.7.2-cp313-cp313-win_amd64.whl", hash = "sha256:66f385d0aa4a673995eba1af3c6f8be9f17aececdc969359770ad1561bbc3549", size = 3604311 },
+    { url = "https://files.pythonhosted.org/packages/a2/2c/389b3943f79c1fd263ccd6e04eb6fae2766d62a19102cca764e365f74a42/pypartmc-1.7.2-cp38-cp38-macosx_13_0_x86_64.whl", hash = "sha256:b26af5056a5f24d9872b797357ca92910c5f34c37d22ed02b8c71c4351afc4dd", size = 4622572 },
+    { url = "https://files.pythonhosted.org/packages/9e/da/36c3a2c66c0fb5acbdef20266ca60aa2cc212ddb8acf1c7bcc021f0fd6f0/pypartmc-1.7.2-cp38-cp38-macosx_14_0_arm64.whl", hash = "sha256:e20eb6b7cb1abee3bdc14f08e7b9b73e2efcf32f206f79ad6b2f848c30b69288", size = 3527974 },
+    { url = "https://files.pythonhosted.org/packages/ba/de/0943a3f6fbf6197b0c123435129898712d37c5209fef0f1bdc8eff84e728/pypartmc-1.7.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d6473602f6bb3f4c2b6d24c4f22a70d3c87e9f630a4397e945e9007fd2bbf8cf", size = 3607920 },
+    { url = "https://files.pythonhosted.org/packages/5b/ab/efe6156f3789d9b9a65fd54291cb19fc24e186432b5c6b08b55354b26608/pypartmc-1.7.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6dddf1420acd9ace120242558babead7b3cf15d797f41cb09856117171f0ec60", size = 4358286 },
+    { url = "https://files.pythonhosted.org/packages/d8/a5/a2baccecc3c59200de23ec9f4f6cedcc075f5243e51096774931b72e5700/pypartmc-1.7.2-cp38-cp38-win_amd64.whl", hash = "sha256:f5e7f32d48bf5a7f4807e1537103806c5f7eb4c46e8b07c542d017e69094c1d1", size = 3604533 },
+    { url = "https://files.pythonhosted.org/packages/c2/ac/7a66aa027b2eb93ce65f1ba2d72764f3ce0c303842048468ef2df3bddc98/pypartmc-1.7.2-cp39-cp39-macosx_13_0_x86_64.whl", hash = "sha256:3bc156b6bc7fd17398cb39f54d5ef3a975a0aecb2995f6d08a99e3404655382e", size = 4623126 },
+    { url = "https://files.pythonhosted.org/packages/f1/ae/25930411fb9e6237070932906b8c45c2a078a3e8231d642608e71a0df4b0/pypartmc-1.7.2-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:347467790dcbdd67f2c8963d0e72470fecd5f8314ebb19478bfc1ff677386717", size = 3528742 },
+    { url = "https://files.pythonhosted.org/packages/f1/b9/112a321992b89984f90a7457bf8671fd592d14b645f486d707af60202d58/pypartmc-1.7.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:615354a25ed2cd7d7b368d496736edb724b3050c3f0b136b73c1dd23f39acfe5", size = 3608533 },
+    { url = "https://files.pythonhosted.org/packages/07/2b/852a50c05942c20876d330b89f81f0d21266cc756a65d618d7cf13c82399/pypartmc-1.7.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bc8f28d2fa08599a394231a01551b3583c97e06d524c31ea6de64b4e8a9a2fb9", size = 4358977 },
+    { url = "https://files.pythonhosted.org/packages/25/66/2c1992ea67debdde64bece85fc67d0652d1efdd5ec705e571533de2eb842/pypartmc-1.7.2-cp39-cp39-win_amd64.whl", hash = "sha256:0649f9581c293d1bc6ed2ffaf84685020e898be292d22f6d220292ce68eedfa4", size = 3603938 },
+]
+
+[[package]]
 name = "pyrcel"
 version = "1.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -3483,6 +3525,7 @@ tests = [
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
     { name = "matplotlib", version = "3.10.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "open-atmos-jupyter-utils" },
+    { name = "pypartmc" },
     { name = "pyrcel" },
     { name = "pysdm-examples" },
     { name = "pytest" },
@@ -3501,6 +3544,7 @@ requires-dist = [
     { name = "open-atmos-jupyter-utils", marker = "extra == 'tests'", specifier = ">=1.2.0" },
     { name = "pint" },
     { name = "pyevtk" },
+    { name = "pypartmc", marker = "extra == 'tests'" },
     { name = "pyrcel", marker = "extra == 'tests'" },
     { name = "pysdm-examples", marker = "extra == 'tests'" },
     { name = "pytest", marker = "extra == 'tests'" },
