@@ -15,7 +15,6 @@ from PySDM_examples.Loftus_and_Wordsworth_2021.parcel import AlienParcel
 # Some of this is probably not needed, not sure what yet
 class Simulation:
     def __init__(self, settings, backend=CPU):
-
         builder = Builder(
             backend=backend(
                 formulae=settings.formulae,
@@ -74,6 +73,7 @@ class Simulation:
         output["z"].append(self.particulator.products["z"].get()[cell_id])
         output["S"].append(self.particulator.products["RH"].get()[cell_id] / 100 - 1)
         output["t"].append(self.particulator.products["t"].get())
+
 
     def run(self):
         output = {
