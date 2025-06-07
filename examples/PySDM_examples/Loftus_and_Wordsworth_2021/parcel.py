@@ -1,4 +1,3 @@
-from typing import List, Optional
 from PySDM.environments.parcel import Parcel
 
 
@@ -13,7 +12,6 @@ class AlienParcel(Parcel):
         w: float = 0,
         zcloud: float = 0,
         mixed_phase=False,
-
     ):
         super().__init__(
             dt=dt,
@@ -24,7 +22,7 @@ class AlienParcel(Parcel):
             w=w,
             z0=zcloud,
             mixed_phase=mixed_phase,
-            variables=None
+            variables=None,
         )
 
     def advance_parcel_vars(self):
@@ -37,7 +35,9 @@ class AlienParcel(Parcel):
         T = self["T"][0]
         p = self["p"][0]
 
-        dz_dt = - self.particulator.attributes["terminal velocity"].to_ndarray()[0]#*dt#formulae.trivia.terminal_velocity(self.particulator.#self.w((self.particulator.n_steps + 1 / 2) * dt) + self["terminal_velocity"][0]
+        dz_dt = -self.particulator.attributes["terminal velocity"].to_ndarray()[
+            0
+        ]  # *dt#formulae.trivia.terminal_velocity(self.particulator.#self.w((self.particulator.n_steps + 1 / 2) * dt) + self["terminal_velocity"][0]
         water_vapour_mixing_ratio = (
             self["water_vapour_mixing_ratio"][0]
             - self.delta_liquid_water_mixing_ratio / 2
@@ -53,7 +53,7 @@ class AlienParcel(Parcel):
                 self.delta_liquid_water_mixing_ratio / dz_dt / dt
             ),
         )
-        drhod_dz = drho_dz 
+        drhod_dz = drho_dz
 
         self.particulator.backend.explicit_euler(self._tmp["z"], dt, dz_dt)
         self.particulator.backend.explicit_euler(
