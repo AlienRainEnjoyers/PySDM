@@ -3,14 +3,8 @@ import unittest
 from unittest.mock import patch
 import numpy as np
 
-from Alien_Rain_2025 import alien_rain
-from Alien_Rain_2025.tests import mock_planet
-from Alien_Rain_2025.alien_rain import Planet
+from examples.PySDM_examples.Loftus_and_Wordsworth_2021.planet import Planet
 
-
-@patch(
-    "examples.PySDM_examples.Alien_Rain.alien_rain.Planet", new=mock_planet.MockPlanet
-)
 class TestAlienRain(unittest.TestCase):
     def test_calculate_raindrop_parameters(self) -> None:
         """Test the calculate_raindrop_parameters function."""
