@@ -1,105 +1,132 @@
-# This test file is temporarily placed in this directory for convenience. To be moved to tests/examples once completed
 import unittest
 from unittest.mock import patch
 import numpy as np
+from PySDM import Formulae
+from PySDM.physics import si
+from scipy.optimize import fsolve
 
-from examples.PySDM_examples.Loftus_and_Wordsworth_2021.planet import Planet
+from PySDM_examples.Loftus_and_Wordsworth_2021.planet import EarthLike, Earth, EarlyMars, Jupiter, Saturn, K2_18B
+from PySDM_examples.Loftus_and_Wordsworth_2021.simulation import Simulation
+from PySDM_examples.Loftus_and_Wordsworth_2021.parcel import AlienParcel
+from PySDM_examples.Loftus_and_Wordsworth_2021 import Settings
 
-class TestAlienRain(unittest.TestCase):
-    def test_calculate_raindrop_parameters(self) -> None:
-        """Test the calculate_raindrop_parameters function."""
-        pl = Planet()
-        r_small, r_max, dr = alien_rain.calculate_raindrop_parameters(pl)
 
-        # Test return types and reasonable values
-        self.assertIsInstance(r_small, float)
-        self.assertIsInstance(r_max, float)
-        self.assertIsInstance(dr, float)
-
-        # Test that dr is the expected constant
-        self.assertEqual(dr, 1e-6)
-
-        # Test that r_small < r_max (physical constraint)
-        self.assertLess(r_small, r_max)
-
-        # Test reasonable ranges
-        self.assertGreater(r_small, 1e-6)  # > 1 micrometer
-        self.assertLess(r_small, 1e-3)  # < 1 mm
-        self.assertGreater(r_max, 1e-4)  # > 0.1 mm
-        self.assertLess(r_max, 1e-2)  # < 1 cm
-
-    def test_calculate_raindrop_parameters_different_conditions(self) -> None:
-        """Test raindrop parameters under different planetary conditions."""
-        # Test low humidity planet
-        pl_low_rh = Planet(RH_surf=0.25)
-        r_small_low, r_max_low, _ = alien_rain.calculate_raindrop_parameters(pl_low_rh)
-
-        # Test high humidity planet
-        pl_high_rh = Planet(RH_surf=0.95)
-        r_small_high, r_max_high, _ = alien_rain.calculate_raindrop_parameters(
-            pl_high_rh
+class TestLoftusWordsworth2021(unittest.TestCase):
+    
+    def setUp(self):
+        self.formulae = Formulae(
+            ventilation="PruppacherAndRasmussen1979",
+            saturation_vapour_pressure="AugustRocheMagnus",
+            diffusion_coordinate="WaterMassLogarithm",
+        )
+        self.earth_like = EarthLike()
+        
+    def test_planet_classes(self):
+        """Test planet class instantiation and basic properties."""
+        planets = [
+            EarthLike(),
+            Earth(),
+            EarlyMars(),
+            Jupiter(),
+            Saturn(),
+            K2_18B()
+        ]
+        
+        for planet in planets:
+            self.assertGreater(planet.g_std, 0)
+            self.assertGreater(planet.T_STP, 0)
+            self.assertGreater(planet.p_STP, 0)
+            self.assertGreaterEqual(planet.RH_zref, 0)
+            self.assertLessEqual(planet.RH_zref, 1)
+            
+            # atmospheric composition sums to 1 or less
+            total_conc = (planet.dry_molar_conc_H2 + planet.dry_molar_conc_He + 
+                         planet.dry_molar_conc_N2 + planet.dry_molar_conc_O2 + 
+                         planet.dry_molar_conc_CO2)
+            self.assertLessEqual(total_conc, 1.01)
+            
+        
+    def test_water_vapour_mixing_ratio_calculation(self):
+        """Test water vapour mixing ratio calculation."""
+        const = self.formulae.constants
+        planet = EarthLike()
+        
+        pvs = self.formulae.saturation_vapour_pressure.pvs_water(planet.T_STP)
+        initial_water_vapour_mixing_ratio = const.eps / (
+            planet.p_STP / planet.RH_zref / pvs - 1
+        )
+        
+        self.assertGreater(initial_water_vapour_mixing_ratio, 0)
+        self.assertLess(initial_water_vapour_mixing_ratio, 0.1)  # Should be less than 10%
+        
+        
+    def test_alien_parcel_initialization(self):
+        """Test AlienParcel class initialization."""
+        parcel = AlienParcel(
+            dt=1.0 * si.second,
+            mass_of_dry_air=1e5 * si.kg,
+            pcloud=90000 * si.pascal,
+            initial_water_vapour_mixing_ratio=0.01,
+            Tcloud=280 * si.kelvin,
+            w=0,
+            zcloud=1000 * si.m,
         )
 
-        # Lower humidity should lead to larger minimum raindrop size
-        self.assertGreater(r_small_low, r_small_high)
-
-        # Test different gravity conditions
-        pl_high_g = Planet(M_p=2.0, R_p=1.0)  # Higher gravity
-        pl_low_g = Planet(M_p=0.5, R_p=1.5)  # Lower gravity
-
-        _, r_max_high_g, _ = alien_rain.calculate_raindrop_parameters(pl_high_g)
-        _, r_max_low_g, _ = alien_rain.calculate_raindrop_parameters(pl_low_g)
-
-        # Higher gravity should lead to smaller maximum stable raindrop
-        self.assertLess(r_max_high_g, r_max_low_g)
-
-    def test_compute_evaporation_and_min_radius(self):
-        """Test the compute_evaporation_and_min_radius function."""
-        # Set up test parameters
-        pl_initial = Planet()
-        R_p = 1.0
-        M_p = 1.0
-        X_composition = np.zeros(5)
-        X_composition[2] = 1.0  # N2 atmosphere
-        r_small = 5e-5
-        r_max = 2e-3
-        dr = 1e-6
-
-        # Call the function
-        r0grid, RHgrid, m_frac_evap, RHs, r_mins = (
-            alien_rain.compute_evaporation_and_min_radius(
-                pl_initial, R_p, M_p, X_composition, r_small, r_max, dr
-            )
+        self.assertTrue(hasattr(parcel, 'advance_parcel_vars'))
+        
+    def test_simulation_class(self):
+        """Test Simulation class initialization and basic functionality."""
+        planet = EarthLike()
+        
+        settings = Settings(
+            planet=planet,
+            r_wet=1e-4 * si.m,
+            mass_of_dry_air=1e5 * si.kg,
+            initial_water_vapour_mixing_ratio=0.01,
+            pcloud=90000 * si.pascal,
+            Zcloud=1000 * si.m,
+            Tcloud=280 * si.kelvin,
+            formulae=self.formulae,
         )
-
-        # Test output shapes and types
-        self.assertIsInstance(r0grid, np.ndarray)
-        self.assertIsInstance(RHgrid, np.ndarray)
-        self.assertIsInstance(m_frac_evap, np.ndarray)
-        self.assertIsInstance(RHs, np.ndarray)
-        self.assertIsInstance(r_mins, np.ndarray)
-
-        # Test grid dimensions
-        n_r0 = 150
-        n_RH = 60  # 30 + 30
-        self.assertEqual(r0grid.shape, (n_RH, n_r0))
-        self.assertEqual(RHgrid.shape, (n_RH, n_r0))
-        self.assertEqual(m_frac_evap.shape, (n_RH, n_r0))
-        self.assertEqual(RHs.shape, (n_RH,))
-        self.assertEqual(r_mins.shape, (n_RH,))
-
-        # Test RH values range
-        self.assertAlmostEqual(np.min(RHs), 0.25, places=2)
-        self.assertAlmostEqual(np.max(RHs), 0.99, places=2)
-
-        # Test r0 values are logarithmically spaced
-        r0s_first_row = r0grid[0, :]
-        self.assertGreater(r0s_first_row[0], r_small / 10)
-        self.assertLessEqual(r0s_first_row[-1], r_max)
-
-        # Test mass fraction evaporated values are between 0 and 1
-        self.assertTrue(np.all(m_frac_evap >= 0))
-        self.assertTrue(np.all(m_frac_evap <= 1))
-
-        # Test that minimum radii decrease with increasing RH
-        self.assertGreater(r_mins[0], r_mins[-1])
+        
+        simulation = Simulation(settings)
+        
+        self.assertTrue(hasattr(simulation, 'particulator'))
+        self.assertTrue(hasattr(simulation, 'run'))
+        self.assertTrue(hasattr(simulation, 'save'))
+        
+        products = simulation.particulator.products
+        required_products = ["radius_m1", "z", "RH", "t"]
+        for product in required_products:
+            self.assertIn(product, products)
+            
+    def test_simulation_run_basic(self):
+        """Test basic simulation run functionality."""
+        planet = EarthLike()
+        
+        settings = Settings(
+            planet=planet,
+            r_wet=1e-5 * si.m,  # Small droplet for quick evaporation
+            mass_of_dry_air=1e5 * si.kg,
+            initial_water_vapour_mixing_ratio=0.01,  # Low humidity
+            pcloud=90000 * si.pascal,
+            Zcloud=100 * si.m,  # Low height
+            Tcloud=280 * si.kelvin,
+            formulae=self.formulae,
+        )
+        
+        simulation = Simulation(settings)
+        output = simulation.run()
+        
+        # output structure
+        self.assertIn('r', output)
+        self.assertIn('S', output)
+        self.assertIn('z', output)
+        self.assertIn('t', output)
+        
+        # all output arrays have same length
+        lengths = [len(output[key]) for key in output.keys()]
+        self.assertTrue(all(l == lengths[0] for l in lengths))
+        
+        # arrays are not empty
+        self.assertGreater(len(output['r']), 0)
