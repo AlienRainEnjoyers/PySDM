@@ -146,6 +146,3 @@ dmypy.json
 
 #Jetbrains
 .idea/
-
-# Data files 
-*.npy
