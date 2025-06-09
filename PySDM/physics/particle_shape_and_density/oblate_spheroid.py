@@ -6,7 +6,7 @@ class OblateSpheroid:
         pass
 
     @staticmethod
-    def equivalent_radius(a: float, b: float, sigma_c_air: float, g: float, rho_c_l: float, rho_air: float) -> float: # Removed self, added a, b
+    def equivalent_radius(a: float, b: float, sigma_c_air: float, g: float, rho_c_l: float, rho_air: float) -> float:
         """
         Calculates an equivalent radius based on a formula involving surface tension,
         gravity, and densities.
