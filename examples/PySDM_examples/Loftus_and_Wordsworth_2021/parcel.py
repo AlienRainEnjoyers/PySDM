@@ -35,15 +35,12 @@ class AlienParcel(Parcel):
         T = self["T"][0]
         p = self["p"][0]
 
-        dz_dt = -self.particulator.attributes["terminal velocity"].to_ndarray()[
-            0
-        ]  # *dt#formulae.trivia.terminal_velocity(self.particulator.#self.w((self.particulator.n_steps + 1 / 2) * dt) + self["terminal_velocity"][0]
+        dz_dt = - self.particulator.attributes["terminal velocity"].to_ndarray()[0]
         water_vapour_mixing_ratio = (
             self["water_vapour_mixing_ratio"][0]
             - self.delta_liquid_water_mixing_ratio / 2
         )
 
-        # derivative evaluated at p_old, T_old, mixrat_mid, w_mid
         drho_dz = formulae.hydrostatics.drho_dz(
             p=p,
             T=T,
