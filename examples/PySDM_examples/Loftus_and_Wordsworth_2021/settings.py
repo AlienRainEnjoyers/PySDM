@@ -1,4 +1,4 @@
-#Planetary Properties, Loftus and Wordsworth 2021 Table 1
+# Planetary Properties, Loftus and Wordsworth 2021 Table 1
 
 from pystrict import strict
 

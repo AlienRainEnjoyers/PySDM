@@ -75,9 +75,8 @@ class Simulation:
         }
 
         self.save(output)
-        while self.particulator.environment["z"][0] >0 and output["r"][-1] > 1e-6:
+        while self.particulator.environment["z"][0] > 0 and output["r"][-1] > 1e-6:
             self.particulator.run(1)
             self.save(output)
 
         return output
-    

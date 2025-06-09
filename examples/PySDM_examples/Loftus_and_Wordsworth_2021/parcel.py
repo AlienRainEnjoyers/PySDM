@@ -35,7 +35,7 @@ class AlienParcel(Parcel):
         T = self["T"][0]
         p = self["p"][0]
 
-        dz_dt = - self.particulator.attributes["terminal velocity"].to_ndarray()[0]
+        dz_dt = -self.particulator.attributes["terminal velocity"].to_ndarray()[0]
         water_vapour_mixing_ratio = (
             self["water_vapour_mixing_ratio"][0]
             - self.delta_liquid_water_mixing_ratio / 2
