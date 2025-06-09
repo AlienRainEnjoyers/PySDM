@@ -2,6 +2,8 @@ from contextlib import contextmanager
 from PySDM import Formulae
 from PySDM.physics import si
 import pytest
+import numpy as np
+from scipy.optimize import fsolve
 
 from PySDM_examples.Loftus_and_Wordsworth_2021.planet import EarthLike, Earth, EarlyMars, Jupiter, Saturn, K2_18B
 from PySDM_examples.Loftus_and_Wordsworth_2021.simulation import Simulation
@@ -152,3 +154,49 @@ class TestLoftusWordsworth2021:
             assert all(l == lengths[0] for l in lengths), "Not all output arrays have the same length"
             
             assert len(output['r']) > 0, "Output array 'r' is empty"
+
+    def test_saturation_at_cloud_base(self):
+        formulae= Formulae(
+            ventilation="PruppacherAndRasmussen1979",
+            saturation_vapour_pressure="AugustRocheMagnus",
+            diffusion_coordinate="WaterMassLogarithm",
+        )
+
+        new_Earth = EarthLike()
+        new_Earth.T_STP
+
+        radius_array = np.logspace(-4.5, -2.5, 50) * si.m
+        RH_array = np.linspace(0.25, .99, 50)
+        const = formulae.constants
+
+        def mix(dry,vap,ratio):
+            return (dry + ratio * vap)/(1 + ratio)
+
+        for i,RH in enumerate(RH_array[::-1]):
+            new_Earth.RH_zref = RH
+
+            pvs = formulae.saturation_vapour_pressure.pvs_water(new_Earth.T_STP)
+            initial_water_vapour_mixing_ratio = const.eps / (new_Earth.p_STP / new_Earth.RH_zref / pvs - 1
+                    )
+
+            Rair = mix(const.Rd,const.Rv,initial_water_vapour_mixing_ratio)
+            c_p = mix(const.c_pd,const.c_pv,initial_water_vapour_mixing_ratio)
+
+            def f(x):
+                return initial_water_vapour_mixing_ratio/(initial_water_vapour_mixing_ratio+ const.eps)*new_Earth.p_STP*(x/new_Earth.T_STP)**(c_p/Rair
+                        ) - formulae.saturation_vapour_pressure.pvs_water(x)
+                    
+            tdews = (fsolve(f, [150,300]))
+            Tcloud = np.max(tdews)
+            Zcloud = (new_Earth.T_STP-Tcloud)*c_p/new_Earth.g_std
+            thstd = formulae.trivia.th_std(new_Earth.p_STP, new_Earth.T_STP)
+
+            pcloud = formulae.hydrostatics.p_of_z_assuming_const_th_and_initial_water_vapour_mixing_ratio(new_Earth.p_STP, 
+                    thstd, initial_water_vapour_mixing_ratio, Zcloud)
+
+            np.testing.assert_approx_equal(
+                actual=pcloud*(initial_water_vapour_mixing_ratio/(initial_water_vapour_mixing_ratio + const.eps))/
+                    formulae.saturation_vapour_pressure.pvs_water(Tcloud),
+                desired=1,
+                significant=4
+            )
