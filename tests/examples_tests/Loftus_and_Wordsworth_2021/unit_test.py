@@ -150,10 +150,18 @@ class TestLoftusWordsworth2021:
             assert 'z' in output
             assert 't' in output
             
+            assert output['r'] is not None
+            assert output['S'] is not None
+            assert output['z'] is not None
+            assert output['t'] is not None
+
+            assert len(output['r']) > 0, "Output array 'r' is empty"
+            assert len(output['S']) > 0, "Output array 'S' is empty"
+            assert len(output['z']) > 0, "Output array 'z' is empty"
+            assert len(output['t']) > 0, "Output array 't' is empty"
+            
             lengths = [len(output[key]) for key in output.keys()]
             assert all(l == lengths[0] for l in lengths), "Not all output arrays have the same length"
-            
-            assert len(output['r']) > 0, "Output array 'r' is empty"
 
     def test_saturation_at_cloud_base(self):
         formulae= Formulae(
@@ -199,3 +207,4 @@ class TestLoftusWordsworth2021:
                 desired=1,
                 significant=4
             )
+    

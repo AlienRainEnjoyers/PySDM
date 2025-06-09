@@ -10,11 +10,18 @@ from PySDM_examples.Loftus_and_Wordsworth_2021.planet import EarthLike
 
 
 class GroundTruthLoader:
-    def __init__(self, groundtruth_dir_path):
+    def __init__(
+        self, 
+        groundtruth_dir_path, 
+        n_samples=2, 
+        random_seed=2137
+    ):
         self.dir_path = groundtruth_dir_path
         self.RHs = None
         self.r0grid = None
         self.m_frac_evap = None
+        self.n_samples = n_samples  # Number of random samples to test
+        np.random.seed(random_seed) # reproducible random samples during debugging
 
     def __enter__(self):
         try:
@@ -70,6 +77,7 @@ class TestNPYComparison:
         )
         return initial_water_vapour_mixing_ratio, Tcloud, Zcloud, pcloud
 
+
     def test_figure_2_replication_accuracy(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         groundtruth_dir = os.path.abspath(os.path.join(current_dir, "ground_truth"))
@@ -89,13 +97,8 @@ class TestNPYComparison:
             n_rh_values = len(gt.RHs)
             n_radius_values = gt.r0grid.shape[1] 
             
-            #### Random sampling setup
-            n_samples = 2  # Number of random samples to test
-            np.random.seed(2137) # reproducible random samples during debugging
             total_points = n_rh_values * n_radius_values
-            n_samples = min(n_samples, total_points)
-            ####
-
+            n_samples = min(gt.n_samples, total_points)
 
             if n_samples == 0:
                 pytest.skip("No data points available to sample.")
@@ -119,55 +122,19 @@ class TestNPYComparison:
                     iwvmr, Tcloud, Zcloud, pcloud = self._calculate_cloud_properties(
                         current_planet_state, current_rh, formulae
                     )
+                    simulated_m_frac_evap_point = self.calc_simulated_m_frac_evap_point(
+                        self, 
+                        current_planet_state, formulae, i_rh, j_r, current_rh, 
+                        current_r_m, expected_m_frac_evap, simulated_m_frac_evap_point,
+                        iwvmr, Tcloud, Zcloud, pcloud
+                    )
                 except Exception as e: 
                     print(f"Warning: Error in _calculate_cloud_properties for RH={current_rh} (sample idx {i_rh},{j_r}): {e}.")
-                else: 
-                    if np.isnan(current_r_m) or current_r_m <= 0:
-                        print(f"Warning: Invalid radius current_r_m={current_r_m} for sample idx {i_rh},{j_r}.")
-                    else:
-                        settings = Settings(
-                            planet=current_planet_state,
-                            r_wet=current_r_m,
-                            mass_of_dry_air= 1e5 * si.kg, 
-                            coord="WaterMassLogarithm",   
-                            initial_water_vapour_mixing_ratio=iwvmr,
-                            pcloud=pcloud ,
-                            Zcloud=Zcloud ,
-                            Tcloud=Tcloud,
-                            formulae=formulae,
-                        )
-                        simulation = Simulation(settings)
-                        
-                        try:
-                            output = simulation.run()
-                            if output and 'r' in output and len(output['r']) > 0 and 'z' in output and len(output['z']) > 0:
-                                final_radius_um = output['r'][-1]
-                                if np.isnan(final_radius_um) or final_radius_um < 0:
-                                    final_radius_m = final_radius_um * 1e-6
-                                    if final_radius_m < 0: # Non-physical radius
-                                        simulated_m_frac_evap_point = 1.0 # 1.0 means fully evaporated
-                                    else:
-                                        simulated_m_frac_evap_point = np.nan
-                                else:
-                                    final_radius_m = final_radius_um * 1e-6
-                                    if current_r_m == 0:
-                                        frac_evap = 1.0 
-                                    else:
-                                        frac_evap = 1.0 - (final_radius_m / current_r_m)**3
-                                    frac_evap = np.clip(frac_evap, 0.0, 1.0)
-                                    simulated_m_frac_evap_point = frac_evap
-                            else:
-                                simulated_m_frac_evap_point = np.nan
-                        except Exception as e:
-                            print(f"Warning: Simulation run failed for RH={current_rh}, r={current_r_m} (sample idx {i_rh},{j_r}): {e}.")
-                            if np.isclose(expected_m_frac_evap, 1.0, atol=1e-6):
-                                simulated_m_frac_evap_point = 1.0
-                            else:
-                                simulated_m_frac_evap_point = np.nan
+
 
                 error_context = (f"Sample (RH_idx={i_rh}, R_idx={j_r}), "
-                                 f"RH={current_rh:.4f}, R_m={current_r_m:.3e}. "
-                                 f"Expected: {expected_m_frac_evap}, Got: {simulated_m_frac_evap_point}")
+                                f"RH={current_rh:.4f}, R_m={current_r_m:.3e}. "
+                                f"Expected: {expected_m_frac_evap}, Got: {simulated_m_frac_evap_point}")
 
                 if np.isnan(expected_m_frac_evap):
                     assert np.isnan(simulated_m_frac_evap_point), \
@@ -183,3 +150,55 @@ class TestNPYComparison:
                         err_msg=f"Value Mismatch. {error_context}"
                     )
 
+
+    def calc_simulated_m_frac_evap_point(
+        self, 
+        current_planet_state, formulae, i_rh, j_r, current_rh, 
+        current_r_m, expected_m_frac_evap, simulated_m_frac_evap_point,
+        iwvmr, Tcloud, Zcloud, pcloud
+    ):
+                
+        if np.isnan(current_r_m) or current_r_m <= 0:
+            print(f"Warning: Invalid radius current_r_m={current_r_m} for sample idx {i_rh},{j_r}.")
+        else:
+            settings = Settings(
+                planet=current_planet_state,
+                r_wet=current_r_m,
+                mass_of_dry_air= 1e5 * si.kg, 
+                coord="WaterMassLogarithm",   
+                initial_water_vapour_mixing_ratio=iwvmr,
+                pcloud=pcloud,
+                Zcloud=Zcloud,
+                Tcloud=Tcloud,
+                formulae=formulae,
+            )
+            simulation = Simulation(settings)
+            
+            try:
+                output = simulation.run()
+                if output and 'r' in output and len(output['r']) > 0 and 'z' in output and len(output['z']) > 0:
+                    final_radius_um = output['r'][-1]
+                    if np.isnan(final_radius_um) or final_radius_um < 0:
+                        final_radius_m = final_radius_um * 1e-6
+                        if final_radius_m < 0: # Non-physical radius
+                            simulated_m_frac_evap_point = 1.0 # 1.0 means fully evaporated
+                        else:
+                            simulated_m_frac_evap_point = np.nan
+                    else:
+                        final_radius_m = final_radius_um * 1e-6
+                        if current_r_m == 0:
+                            frac_evap = 1.0 
+                        else:
+                            frac_evap = 1.0 - (final_radius_m / current_r_m)**3
+                        frac_evap = np.clip(frac_evap, 0.0, 1.0)
+                        simulated_m_frac_evap_point = frac_evap
+                else:
+                    simulated_m_frac_evap_point = np.nan
+            except Exception as e:
+                print(f"Warning: Simulation run failed for RH={current_rh}, r={current_r_m} (sample idx {i_rh},{j_r}): {e}.")
+                if np.isclose(expected_m_frac_evap, 1.0, atol=1e-6):
+                    simulated_m_frac_evap_point = 1.0
+                else:
+                    simulated_m_frac_evap_point = np.nan
+
+        return simulated_m_frac_evap_point
