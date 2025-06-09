@@ -165,7 +165,6 @@ class TestLoftusWordsworth2021:
         new_Earth = EarthLike()
         new_Earth.T_STP
 
-        radius_array = np.logspace(-4.5, -2.5, 50) * si.m
         RH_array = np.linspace(0.25, .99, 50)
         const = formulae.constants
 

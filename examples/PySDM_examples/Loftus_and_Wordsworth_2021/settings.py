@@ -1,5 +1,4 @@
-# Planetary Properties, Loftus and Wordsworth 2021 Table 1
-from PySDM.physics import si
+#Planetary Properties, Loftus and Wordsworth 2021 Table 1
 
 from pystrict import strict
 
@@ -13,7 +12,6 @@ from PySDM_examples.Loftus_and_Wordsworth_2021.planet import Planet
 class Settings:
     def __init__(
         self,
-        # w_avg: float,
         r_wet: float,
         mass_of_dry_air: float,
         planet: Planet,
@@ -28,7 +26,6 @@ class Settings:
             saturation_vapour_pressure="AugustRocheMagnus",
             diffusion_coordinate=coord,
         )
-        const = self.formulae.constants
 
         self.initial_water_vapour_mixing_ratio = initial_water_vapour_mixing_ratio
         self.p0 = planet.p_STP
