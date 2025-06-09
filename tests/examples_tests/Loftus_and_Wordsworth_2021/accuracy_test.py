@@ -114,18 +114,14 @@ class TestNPYComparison:
                 current_rh = gt.RHs[i_rh]
                 current_r_m = gt.r0grid[0, j_r] 
                 expected_m_frac_evap = gt.m_frac_evap[i_rh, j_r]
-                
-                
-                simulated_m_frac_evap_point = np.nan
 
                 try:
                     iwvmr, Tcloud, Zcloud, pcloud = self._calculate_cloud_properties(
                         current_planet_state, current_rh, formulae
                     )
                     simulated_m_frac_evap_point = self.calc_simulated_m_frac_evap_point(
-                        self, 
                         current_planet_state, formulae, i_rh, j_r, current_rh, 
-                        current_r_m, expected_m_frac_evap, simulated_m_frac_evap_point,
+                        current_r_m, expected_m_frac_evap,
                         iwvmr, Tcloud, Zcloud, pcloud
                     )
                 except Exception as e: 
@@ -154,9 +150,11 @@ class TestNPYComparison:
     def calc_simulated_m_frac_evap_point(
         self, 
         current_planet_state, formulae, i_rh, j_r, current_rh, 
-        current_r_m, expected_m_frac_evap, simulated_m_frac_evap_point,
+        current_r_m, expected_m_frac_evap,
         iwvmr, Tcloud, Zcloud, pcloud
     ):
+
+        simulated_m_frac_evap_point = np.nan
                 
         if np.isnan(current_r_m) or current_r_m <= 0:
             print(f"Warning: Invalid radius current_r_m={current_r_m} for sample idx {i_rh},{j_r}.")
