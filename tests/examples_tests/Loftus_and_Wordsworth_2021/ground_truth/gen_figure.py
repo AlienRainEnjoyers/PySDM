@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 import os
 
 # load results
-dir = os.path.dirname(os.path.abspath(__file__))
-RHs = np.load(os.path.join(dir, "RHs.npy"))
-r0grid = np.load(os.path.join(dir, "r0grid.npy"))
-RHgrid = np.load(os.path.join(dir, "RHgrid.npy"))
-m_frac_evap = np.load(os.path.join(dir, "m_frac_evap.npy"))
-r_mins = np.load(os.path.join(dir, "r_mins.npy"))
+root_dir = os.path.dirname(os.path.abspath(__file__))
+RHs = np.load(os.path.join(root_dir, "RHs.npy"))
+r0grid = np.load(os.path.join(root_dir, "r0grid.npy"))
+RHgrid = np.load(os.path.join(root_dir, "RHgrid.npy"))
+m_frac_evap = np.load(os.path.join(root_dir, "m_frac_evap.npy"))
+r_mins = np.load(os.path.join(root_dir, "r_mins.npy"))
 
 i_RH75 = 29  # index for RH=0.75
 
