@@ -28,6 +28,7 @@ class LofusEtAl2021:
             r_eq
         )
     
+    @staticmethod
     def v_term(const, radius):
         return np.where(
             radius < const.ROGERS_YAU_TERM_VEL_SMALL_R_LIMIT,
