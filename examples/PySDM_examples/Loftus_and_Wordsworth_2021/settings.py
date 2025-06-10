@@ -19,12 +19,11 @@ class Settings:
         pcloud: float,
         Zcloud: float,
         Tcloud: float,
-        coord: str = "WaterMassLogarithm",
         formulae: Formulae = None,
     ):
         self.formulae = formulae or Formulae(
             saturation_vapour_pressure="AugustRocheMagnus",
-            diffusion_coordinate=coord,
+            diffusion_coordinate="WaterMassLogarithm",
         )
 
         self.initial_water_vapour_mixing_ratio = initial_water_vapour_mixing_ratio
@@ -44,5 +43,4 @@ class Settings:
 
         self.rtol_x = 0.5 * (condensation.DEFAULTS.rtol_x)
         self.rtol_thd = condensation.DEFAULTS.rtol_thd
-        self.coord = "volume logarithm"
         self.dt_cond_range = condensation.DEFAULTS.cond_range

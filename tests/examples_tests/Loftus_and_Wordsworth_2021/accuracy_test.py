@@ -189,7 +189,6 @@ class TestNPYComparison:
                 planet=current_planet_state,
                 r_wet=current_r_m,
                 mass_of_dry_air=1e5 * si.kg,
-                coord="WaterMassLogarithm",
                 initial_water_vapour_mixing_ratio=iwvmr,
                 pcloud=pcloud,
                 Zcloud=Zcloud,
