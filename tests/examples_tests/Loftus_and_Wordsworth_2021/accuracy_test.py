@@ -107,9 +107,7 @@ class TestNPYComparison:
                 [(i, j) for i in range(n_rh_values) for j in range(n_radius_values)]
             )
 
-            sampled_indices_flat = np.random.choice(
-                len(all_indices), n_samples, replace=False
-            )
+            sampled_indices_flat = np.random.choice(len(all_indices), n_samples, replace=False)
             sampled_ij_pairs = all_indices[sampled_indices_flat]
 
             for i_rh, j_r in sampled_ij_pairs:
@@ -181,9 +179,7 @@ class TestNPYComparison:
         simulated_m_frac_evap_point = np.nan
 
         if np.isnan(current_r_m) or current_r_m <= 0:
-            print(
-                f"Warning: Invalid radius current_r_m={current_r_m} for sample idx {i_rh},{j_r}."
-            )
+            print(f"Warning: Invalid radius current_r_m={current_r_m} for sample idx {i_rh},{j_r}.")
         else:
             settings = Settings(
                 planet=current_planet_state,
@@ -210,9 +206,7 @@ class TestNPYComparison:
                     if np.isnan(final_radius_um) or final_radius_um < 0:
                         final_radius_m = final_radius_um * 1e-6
                         if final_radius_m < 0:  # Non-physical radius
-                            simulated_m_frac_evap_point = (
-                                1.0  # 1.0 means fully evaporated
-                            )
+                            simulated_m_frac_evap_point = 1.0  # 1.0 means fully evaporated
                         else:
                             simulated_m_frac_evap_point = np.nan
                     else:
